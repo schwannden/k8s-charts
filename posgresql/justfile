@@ -1,0 +1,20 @@
+# default recipe to display help information
+default:
+	@just -l
+
+# add bitnami repo
+add-repo:
+	helm repo add bitnami https://charts.bitnami.com/bitnami
+
+# install postgresql helm chart
+install:
+	helm upgrade --install postgresql bitnami/postgresql --namespace postgresql --create-namespace -f values.yaml
+
+# upgrade postgresql helm chart
+upgrade:
+  helm upgrade -n postgresql -f values.yaml postgresql bitnami/postgresql
+
+# uninstall postgresql helm chart
+uninstall:
+	helm uninstall --namespace=postgresql postgresql
+

@@ -1,0 +1,14 @@
+# print help message
+default:
+	@just -l
+
+# install https redirect middleware
+install-redirect:
+	kubectl apply -f redirect.yaml
+
+# install minio secret
+install-minio-secret:
+	cd ssl && \
+		kubectl create secret tls mobagel-tls --cert=tls.crt --key=tls.key --namespace=minio
+
+

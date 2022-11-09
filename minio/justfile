@@ -1,0 +1,39 @@
+os := if "$(UNAME_S)" == "Darwin" { "darwin-amd64" } else { "linux-amd64" }
+
+# default recipe to display help information
+default:
+	@just -l
+
+# add minio repo
+add-repo:
+	helm repo add minio https://charts.min.io/
+
+# install minio helm chart
+install:
+	helm upgrade --install minio minio/minio --namespace minio --create-namespace -f values.yaml
+
+# uninstall minio helm chart
+uninstall:
+	helm uninstall --namespace=minio minio
+
+
+# download minio client
+download-mc:
+	mkdir -p bin
+	curl -o mc https://dl.min.io/client/mc/release/{{os}}/mc
+	chmod +x mc
+	mv mc bin/
+  
+
+# setup minio local config
+setup-config:
+	./bin/mc --config-dir ${PWD}/.mc alias set datalake https://minio-api.mobagel.com/ ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}
+	./bin/mc --config-dir ${PWD}/.mc alias set datalake-dev https://minio-dev-api.mobagel.com/ ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY}
+
+# setup minio ilm
+setup-ilm:
+	./bin/mc --config-dir .mc ilm import datalake/smb <> ilm.json
+	./bin/mc --config-dir .mc ilm ls datalake/smb
+	./bin/mc --config-dir .mc ilm import datalake-dev/smb <> ilm.json
+	./bin/mc --config-dir .mc ilm ls datalake-dev/smb
+

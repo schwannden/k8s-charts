@@ -1,0 +1,8 @@
+# default recipe to display help information
+default:
+	@just -l
+
+# setup backup-secret
+setup:
+	kubectl apply -f rancher-backup-secret.yaml -n cattle-resources-system
+

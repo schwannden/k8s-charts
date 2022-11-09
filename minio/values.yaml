@@ -1,0 +1,41 @@
+consoleIngress:
+  enabled: true
+  hosts:
+  - minio-console.mydomain.com
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+  tls:
+    - secretName: mobagel-tls
+      hosts:
+        - mobagel.com
+ingress:
+  enabled: true
+  hosts:
+  - minio-api.mydomain.com
+  annotations:
+    kubernetes.io/ingress.class: traefik
+    traefik.ingress.kubernetes.io/router.middlewares: default-redirect-https@kubernetescrd
+  tls:
+    - secretName: mobagel-tls
+      hosts:
+        - mobagel.com
+persistence:
+  VolumeName: minio
+  size: 150Gi
+  storageClass: longhorn
+replicas: 4
+rootPassword: minioadmin-password
+rootUser: minioadmin-user
+policies:
+  - name: bucket-name
+    statements:
+    - resources:
+      - "arn:aws:s3:::smb/*"
+      actions:
+        - "s3:*"
+users:
+- accessKey: minioconsole-user
+  policy: consoleAdmin
+  secretKey: minioconsole-password
+

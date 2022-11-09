@@ -1,0 +1,21 @@
+# default recipe to display help information
+default:
+	@just -l
+
+# setup longhorn-backup-secret
+setup:
+	kubectl create namespace longhorn-system --dry-run=client -o yaml | kubectl apply -f -
+	kubectl apply -f longhorn-backup-secret.yaml --namespace longhorn-system
+
+# add longhorn repo
+add-repo:
+	helm repo add longhorn https://charts.longhorn.io
+
+# install longhorn helm chart
+install:
+	helm upgrade --install longhorn longhorn/longhorn --namespace longhorn-system --create-namespace -f values.yaml
+
+# uninstall longhorn helm chart
+uninstall:
+	helm uninstall --namespace=longhorn-system longhorn
+
